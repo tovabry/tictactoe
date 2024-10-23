@@ -18,16 +18,6 @@
             <Button fx:id="button21" mnemonicParsing="false" onAction="#handleButtonClick" prefHeight="80.0" prefWidth="80.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Button fx:id="button22" mnemonicParsing="false" onAction="#handleButtonClick" prefHeight="80.0" prefWidth="80.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
          </children>
-         <columnConstraints>
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
       </GridPane>
    </children>
 </AnchorPane>
