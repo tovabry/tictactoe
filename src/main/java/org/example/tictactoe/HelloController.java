@@ -60,19 +60,24 @@ public class HelloController {
                     }
                 }
 
-                if (model.isGameWon()) {
-                    showEndGameDialog("Computer " + model.getCurrentPlayer() + " wins!");
-                    resetBoard();
-                    return;
-                } else if (model.isBoardFull()) {
-                    showEndGameDialog("It's a draw!");
-                    resetBoard();
-                    return;
-                }
+                showWinText();
+                showDrawText();
 
                 // Växla tillbaka till spelarens tur
                 model.switchPlayer();
             }
+        }
+    }
+
+    private void showWinText() {
+        if (model.isGameWon()) {
+            showEndGameDialog("Player " + model.getCurrentPlayer() + " wins!");
+        }
+    }
+
+    private void showDrawText() {
+        if (model.isBoardFull()) {
+            showEndGameDialog("It's a draw!");
         }
     }
 
