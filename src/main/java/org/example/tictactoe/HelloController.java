@@ -12,9 +12,6 @@ public class HelloController {
     private Model model = new Model();
 
     @FXML
-    private GridPane boardGrid;
-
-    @FXML
     private Button button00, button01, button02, button10, button11, button12, button20, button21, button22;
 
     @FXML
