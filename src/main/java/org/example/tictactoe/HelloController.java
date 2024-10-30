@@ -9,22 +9,28 @@ import javafx.scene.text.Text;
 
 public class HelloController {
     public GridPane gridPane;
-    private Model model = new Model();
+    private final Model model = new Model();
     private boolean isGameOver = false;
+    private int scoreO;
+    private int scoreX;
+
     @FXML
     private Button button00, button01, button02, button10, button11, button12, button20, button21, button22;
 
     @FXML
     private TextFlow textFlow;
+    @FXML
+    private TextFlow scoreTextFlow;
 
     @FXML
     public void initialize() {
         displayMessage("Make your move...");
+        showScore();
     }
 
     @FXML
     public void playerMove(javafx.event.ActionEvent event) {
-        if (isGameOver) return;
+      //  if (isGameOver) return;
         Button clickedButton = (Button) event.getSource();
 
         Integer row = GridPane.getRowIndex(clickedButton);
@@ -40,7 +46,7 @@ public class HelloController {
     }
 
     private void computerMove() {
-        if (isGameOver) return;
+      //  if (isGameOver) return;
 
         int[] computerMove = model.getComputerMove();
         if (computerMove != null) {
@@ -65,6 +71,7 @@ public class HelloController {
         if (model.isGameWon()) {
             isGameOver = true;
             showWinText();
+            updateScore();
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -93,12 +100,29 @@ public class HelloController {
         }
     }
 
+    private void showScore(){
+        scoreTextFlow.getChildren().clear();
+        String string = ("Points: Player O: " + scoreO + ", Player x: " + scoreX);
+        Text scoreText = new Text(string);
+        scoreTextFlow.getChildren().add(scoreText);
+        scoreText.setStyle("-fx-fill: #7FFF00;");
+    }
+
     public void displayMessage(String message) {
         Text text = new Text(message);
         textFlow.getChildren().add(text);
         text.setStyle("-fx-fill: #7FFF00;");
-        }
 
+    }
+
+    private void updateScore(){
+        if (model.isGameWon())
+          if  (model.getCurrentPlayer() == 'X')
+              scoreX++;
+          if (model.getCurrentPlayer() == 'O')
+              scoreO++;
+
+    }
 
     private void resetBoard() {
         model.initializeBoard();

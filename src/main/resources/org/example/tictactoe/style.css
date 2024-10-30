@@ -15,3 +15,10 @@
      -fx-text-fill: #7FFF00;
      -fx-font-size: 50px;
  }
+
+ #scoreTextFlow{
+     -fx-background-color: black;
+     -fx-fill: #7FFF00;
+     -fx-font-size: 20px;
+
+ }

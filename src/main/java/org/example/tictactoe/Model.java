@@ -21,12 +21,16 @@ public class Model {
         return currentPlayer;
     }
 
+    public boolean isPlaceTaken (int row, int col) {
+        return board[row][col] != '\0';
+    }
+
     public boolean makeMove(int row, int col) {
-        if (board[row][col] == '\0') {
-            board[row][col] = currentPlayer;
-            return true;
-        }
-        return false;
+        if (isPlaceTaken(row, col))
+            return false;
+
+        board[row][col] = currentPlayer;
+        return true;
     }
 
     public boolean isBoardFull() {
