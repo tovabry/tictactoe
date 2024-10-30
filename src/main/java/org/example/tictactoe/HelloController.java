@@ -15,9 +15,6 @@ public class HelloController {
     private int scoreX;
 
     @FXML
-    private Button button00, button01, button02, button10, button11, button12, button20, button21, button22;
-
-    @FXML
     private TextFlow textFlow;
     @FXML
     private TextFlow scoreTextFlow;
@@ -30,7 +27,7 @@ public class HelloController {
 
     @FXML
     public void playerMove(javafx.event.ActionEvent event) {
-      //  if (isGameOver) return;
+        if (isGameOver) return;
         Button clickedButton = (Button) event.getSource();
 
         Integer row = GridPane.getRowIndex(clickedButton);
@@ -46,7 +43,7 @@ public class HelloController {
     }
 
     private void computerMove() {
-      //  if (isGameOver) return;
+        if (isGameOver) return;
 
         int[] computerMove = model.getComputerMove();
         if (computerMove != null) {
@@ -72,6 +69,7 @@ public class HelloController {
             isGameOver = true;
             showWinText();
             updateScore();
+            showScore();
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -86,18 +84,20 @@ public class HelloController {
         resetBoard();
     }
 
+    public void displayMessage(String message) {
+        textFlow.getChildren().clear();
+        Text text = new Text(message);
+        textFlow.getChildren().add(text);
+        text.setStyle("-fx-fill: #7FFF00;");
+    }
+
     private void showWinText() {
-        if (model.isGameWon()) {
-            textFlow.getChildren().clear();
-            displayMessage("Player " + model.getCurrentPlayer() + " wins!");
-        }
+        displayMessage("Player " + model.getCurrentPlayer() + " wins!");
+
     }
 
     private void showDrawText() {
-        if (model.isBoardFull()) {
-            textFlow.getChildren().clear();
-            displayMessage("It's a draw!");
-        }
+        displayMessage("It's a draw!");
     }
 
     private void showScore(){
@@ -108,34 +108,22 @@ public class HelloController {
         scoreText.setStyle("-fx-fill: #7FFF00;");
     }
 
-    public void displayMessage(String message) {
-        Text text = new Text(message);
-        textFlow.getChildren().add(text);
-        text.setStyle("-fx-fill: #7FFF00;");
-
-    }
-
     private void updateScore(){
         if (model.isGameWon())
           if  (model.getCurrentPlayer() == 'X')
               scoreX++;
-          if (model.getCurrentPlayer() == 'O')
+          else
               scoreO++;
-
     }
 
     private void resetBoard() {
         model.initializeBoard();
-        button00.setText("");
-        button01.setText("");
-        button02.setText("");
-        button10.setText("");
-        button11.setText("");
-        button12.setText("");
-        button20.setText("");
-        button21.setText("");
-        button22.setText("");
+        gridPane.getChildren().stream()
+                .filter(node -> node instanceof Button)
+                .map(node -> (Button) node)
+                .forEach(button -> button.setText(""));
         textFlow.getChildren().clear();
+        isGameOver = false;
         initialize();
     }
 }
