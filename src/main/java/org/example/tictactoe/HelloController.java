@@ -51,21 +51,21 @@ public class HelloController {
             int computerCol = computerMove[1];
 
             model.makeMove(computerRow, computerCol);
-
             for (Node node : gridPane.getChildren()) {
                 if (GridPane.getRowIndex(node) == computerRow && GridPane.getColumnIndex(node) == computerCol) {
                     Button button = (Button) node;
-                    button.setText(String.valueOf(model.getCurrentPlayer()));
+                    button.setText(String.valueOf(Model.PLAYER_O)); // Datorns karaktär
                     break;
                 }
             }
-            gameCompleted();
-            model.switchPlayer();
+
+            if (gameCompleted()) return;
+            model.switchPlayer(); // Byt tillbaka till spelarens tur
         }
     }
 
     private boolean gameCompleted() {
-        if (model.isGameWon()) {
+        if (model.isGameWon(model.getCurrentPlayer())) {
             isGameOver = true;
             showWinText();
             updateScore();
@@ -80,7 +80,7 @@ public class HelloController {
     }
 
     @FXML
-    private void resetButton(){
+    private void resetButton() {
         resetBoard();
     }
 
@@ -93,37 +93,36 @@ public class HelloController {
 
     private void showWinText() {
         displayMessage("Player " + model.getCurrentPlayer() + " wins!");
-
     }
 
     private void showDrawText() {
         displayMessage("It's a draw!");
     }
 
-    private void showScore(){
+    private void showScore() {
         scoreTextFlow.getChildren().clear();
-        String string = ("Points: Player O: " + scoreO + ", Player x: " + scoreX);
-        Text scoreText = new Text(string);
+        String scoreString = "Points: Player O: " + scoreO + ", Player X: " + scoreX;
+        Text scoreText = new Text(scoreString);
         scoreTextFlow.getChildren().add(scoreText);
         scoreText.setStyle("-fx-fill: #7FFF00;");
     }
 
-    private void updateScore(){
-        if (model.isGameWon())
-          if  (model.getCurrentPlayer() == 'X')
-              scoreX++;
-          else
-              scoreO++;
+    private void updateScore() {
+        if (model.getCurrentPlayer() == Model.PLAYER_X) {
+            scoreX++;
+        } else {
+            scoreO++;
+        }
     }
 
     private void resetBoard() {
         model.initializeBoard();
         gridPane.getChildren().stream()
                 .filter(node -> node instanceof Button)
-                .map(node -> (Button) node)
-                .forEach(button -> button.setText(""));
+                .forEach(node -> ((Button) node).setText(""));
         textFlow.getChildren().clear();
         isGameOver = false;
+        model.setCurrentPlayer(Model.PLAYER_X); // Sätt spelaren till 'X' efter reset
         initialize();
     }
 }
