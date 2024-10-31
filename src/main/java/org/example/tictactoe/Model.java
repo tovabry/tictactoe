@@ -7,8 +7,8 @@ import java.util.Random;
 public class Model {
     private char[][] board;
     private char currentPlayer;
-    public static final char PLAYER_X = 'X'; // Spelarens karaktär
-    public static final char PLAYER_O = 'O'; // Datorns karaktär
+    public static final char PLAYER_X = 'X';
+    public static final char PLAYER_O = 'O';
 
     public Model() {
         initializeBoard();
@@ -16,16 +16,24 @@ public class Model {
 
     public void initializeBoard() {
         board = new char[3][3];
-        currentPlayer = PLAYER_X; // Spelaren börjar med 'X'
+        currentPlayer = PLAYER_X;
+    }
+
+    public char[][] getBoard() {
+        char[][] boardCopy = new char[3][3];
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(board[i], 0, boardCopy[i], 0, 3);
+        }
+        return boardCopy;
     }
 
     public char getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void setCurrentPlayer(char currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
+//    public void setCurrentPlayer(char currentPlayer) {
+//        this.currentPlayer = currentPlayer;
+//    }
 
     public boolean isPlaceTaken(int row, int col) {
         return board[row][col] != '\0';
@@ -35,8 +43,12 @@ public class Model {
         if (isPlaceTaken(row, col)) {
             return false;
         }
-        board[row][col] = currentPlayer; // Placera den aktuella spelarens karaktär
+        board[row][col] = currentPlayer;
         return true;
+    }
+
+    public boolean isWithinBounds(int row, int col) {
+        return row >= 0 && row < 3 && col >= 0 && col < 3;
     }
 
     public boolean isBoardFull() {
@@ -78,4 +90,6 @@ public class Model {
         Random random = new Random();
         return availableMoves.get(random.nextInt(availableMoves.size()));
     }
+
+
 }

@@ -60,7 +60,7 @@ public class HelloController {
             }
 
             if (gameCompleted()) return;
-            model.switchPlayer(); // Byt tillbaka till spelarens tur
+            model.switchPlayer();
         }
     }
 
@@ -122,7 +122,6 @@ public class HelloController {
                 .forEach(node -> ((Button) node).setText(""));
         textFlow.getChildren().clear();
         isGameOver = false;
-        model.setCurrentPlayer(Model.PLAYER_X); // Sätt spelaren till 'X' efter reset
         initialize();
     }
 }
