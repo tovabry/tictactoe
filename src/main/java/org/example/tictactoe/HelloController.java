@@ -10,12 +10,12 @@ import javafx.scene.text.Text;
 public class HelloController {
     public GridPane gridPane;
     private final Model model = new Model();
-    private boolean isGameOver = false;
+    public boolean isGameOver = false;
     private int scoreO;
     private int scoreX;
 
     @FXML
-    private TextFlow textFlow;
+    TextFlow textFlow;
     @FXML
     private TextFlow scoreTextFlow;
 

@@ -31,18 +31,15 @@ public class Model {
         return currentPlayer;
     }
 
-//    public void setCurrentPlayer(char currentPlayer) {
-//        this.currentPlayer = currentPlayer;
-//    }
-
     public boolean isPlaceTaken(int row, int col) {
         return board[row][col] != '\0';
     }
 
     public boolean makeMove(int row, int col) {
-        if (isPlaceTaken(row, col)) {
+        if (isPlaceTaken(row, col) || isGameWon(currentPlayer)) {
             return false;
         }
+
         board[row][col] = currentPlayer;
         return true;
     }
