@@ -1,10 +1,12 @@
 package org.example.tictactoe;
 
+import java.util.Objects;
+
 public class Model {
     private char[][] board;
-    private char currentPlayer;
-    public static final char PLAYER_X = 'X';
-    public static final char PLAYER_O = 'O';
+    private String currentPlayer;
+    public static final String PLAYER_SERVER = "Server";
+    public static final String PLAYER_CLIENT = "Client";
 
     public Model() {
         initializeBoard();
@@ -12,7 +14,7 @@ public class Model {
 
     public void initializeBoard() {
         board = new char[3][3];
-        currentPlayer = PLAYER_X;
+        currentPlayer = PLAYER_SERVER;
     }
 
     public char[][] getBoard() {
@@ -23,7 +25,7 @@ public class Model {
         return boardCopy;
     }
 
-    public char getCurrentPlayer() {
+    public String getCurrentPlayer() {
         return currentPlayer;
     }
 
@@ -36,15 +38,14 @@ public class Model {
             return false;
         }
 
-        board[row][col] = currentPlayer;
+        board[row][col] = (currentPlayer == PLAYER_SERVER) ? 'X' : 'O'; // Använd X eller O baserat på spelare
         switchPlayer();
         return true;
     }
 
     public boolean receiveOpponentMove(int row, int col) {
         if (isWithinBounds(row, col) && !isPlaceTaken(row, col)) {
-            board[row][col] = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X; // Alternativ spelare
-            // Byt spelare efter att motståndarens drag är mottaget
+            board[row][col] = (Objects.equals(currentPlayer, PLAYER_SERVER)) ? 'O' : 'X'; // Alternativ spelare
             switchPlayer();
             return true;
         }
@@ -66,17 +67,18 @@ public class Model {
         return true;
     }
 
-    public boolean isGameWon(char player) {
+    public boolean isGameWon(String player) {
+        char symbol = (player.equals(PLAYER_SERVER)) ? 'X' : 'O'; // Använd X eller O baserat på spelare
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] == player && board[i][1] == player && board[i][2] == player) return true;
-            if (board[0][i] == player && board[1][i] == player && board[2][i] == player) return true;
+            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) return true;
+            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol) return true;
         }
-        if (board[0][0] == player && board[1][1] == player && board[2][2] == player) return true;
-        return board[0][2] == player && board[1][1] == player && board[2][0] == player;
+        if (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) return true;
+        return board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol;
     }
 
     public void switchPlayer() {
-        currentPlayer = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X;
+        currentPlayer = (currentPlayer.equals(PLAYER_SERVER)) ? PLAYER_CLIENT : PLAYER_SERVER; // Byt spelare
     }
 
 //    public int[] getComputerMove() {

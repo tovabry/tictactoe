@@ -12,6 +12,7 @@ import org.example.tictactoe.socketo.Cliento;
 import org.example.tictactoe.socketo.Servero;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class HelloController {
     public GridPane gridPane;
@@ -47,10 +48,11 @@ public class HelloController {
         isServer = true;
         new Thread(() -> {
             try {
-                server.startServer(8080);
+                server.startServer(port);
                 while (!isGameOver) {
                     int[] move = server.receiveMove();
                     Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                    model.switchPlayer();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,10 +65,11 @@ public class HelloController {
         isServer = false;
         new Thread(() -> {
             try {
-                client.startClient("localhost", port);
+                client.startClient(ip, port);
                 while (!isGameOver) {
                     int[] move = client.receiveMove();
                     Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                    model.switchPlayer();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -76,15 +79,21 @@ public class HelloController {
 
     public void playerMove(ActionEvent event) {
         if (isGameOver) return;
+
+        // Kontrollera att det är den aktuella spelarens tur
+        if ((isServer && !model.getCurrentPlayer().equals(Model.PLAYER_SERVER)) ||
+                (!isServer && !model.getCurrentPlayer().equals(Model.PLAYER_CLIENT))) {
+            displayMessage("It's not your turn!");
+            return;
+        }
+
         Button clickedButton = (Button) event.getSource();
         Integer row = GridPane.getRowIndex(clickedButton);
         Integer col = GridPane.getColumnIndex(clickedButton);
 
-        // Använd isLocalMove = true, eftersom det är ett lokalt drag
         if (model.makeMove(row, col)) {
-            clickedButton.setText(String.valueOf(model.getCurrentPlayer()));
-            sendMoveToOpponent(row, col); // Skicka draget till motståndaren
-            if (gameCompleted()) return;
+            clickedButton.setText(String.valueOf(model.getCurrentPlayer().equals(Model.PLAYER_SERVER) ? 'X' : 'O'));
+            sendMoveToOpponent(row, col);
         }
     }
 
@@ -179,7 +188,7 @@ public class HelloController {
     }
 
     private static void updateScore() {
-        if (model.getCurrentPlayer() == Model.PLAYER_X) {
+        if (Objects.equals(model.getCurrentPlayer(), Model.PLAYER_SERVER)) {
             scoreX++;
         } else {
             scoreO++;
