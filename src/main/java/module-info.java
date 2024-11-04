@@ -6,4 +6,6 @@ module org.example.tictactoe {
 
     opens org.example.tictactoe to javafx.fxml;
     exports org.example.tictactoe;
+    exports org.example.tictactoe.socketo;
+    opens org.example.tictactoe.socketo to javafx.fxml;
 }

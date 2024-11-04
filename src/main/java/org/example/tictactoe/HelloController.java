@@ -1,23 +1,40 @@
 package org.example.tictactoe;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextFlow;
 import javafx.scene.text.Text;
+import org.example.tictactoe.socketo.Cliento;
+import org.example.tictactoe.socketo.Servero;
+
+import java.io.IOException;
 
 public class HelloController {
     public GridPane gridPane;
-    private final Model model = new Model();
-    public boolean isGameOver = false;
-    private int scoreO;
-    private int scoreX;
+    private static final Model model = new Model();
+    public static boolean isGameOver = false;
+    private static int scoreO;
+    private static int scoreX;
+    private static Servero server;
+    private static Cliento client;
+    private static boolean isServer;
 
     @FXML
-    TextFlow textFlow;
+    private TextFlow textFlow;
     @FXML
     private TextFlow scoreTextFlow;
+    @FXML
+    public void onHostButtonClick() {
+        startServer(8080); // Start server on button click
+    }
+    @FXML
+    public void onJoinButtonClick() {
+        startClient("localhost", 8080); // Start client on button click
+    }
 
     @FXML
     public void initialize() {
@@ -25,44 +42,98 @@ public class HelloController {
         showScore();
     }
 
-    @FXML
-    public void playerMove(javafx.event.ActionEvent event) {
+    public void startServer(int port) {
+        server = new Servero();
+        isServer = true;
+        new Thread(() -> {
+            try {
+                server.startServer(8080);
+                while (!isGameOver) {
+                    int[] move = server.receiveMove();
+                    Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void startClient(String ip, int port) {
+        client = new Cliento();
+        isServer = false;
+        new Thread(() -> {
+            try {
+                client.startClient("localhost", port);
+                while (!isGameOver) {
+                    int[] move = client.receiveMove();
+                    Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void playerMove(ActionEvent event) {
         if (isGameOver) return;
         Button clickedButton = (Button) event.getSource();
-
         Integer row = GridPane.getRowIndex(clickedButton);
         Integer col = GridPane.getColumnIndex(clickedButton);
 
+        // Använd isLocalMove = true, eftersom det är ett lokalt drag
         if (model.makeMove(row, col)) {
             clickedButton.setText(String.valueOf(model.getCurrentPlayer()));
-
+            sendMoveToOpponent(row, col); // Skicka draget till motståndaren
             if (gameCompleted()) return;
-            model.switchPlayer();
-            computerMove();
         }
     }
 
-    private void computerMove() {
-        if (isGameOver) return;
 
-        int[] computerMove = model.getComputerMove();
-        if (computerMove != null) {
-            int computerRow = computerMove[0];
-            int computerCol = computerMove[1];
-
-            model.makeMove(computerRow, computerCol);
+    private void makeOpponentMove(int row, int col) {
+        if (model.receiveOpponentMove(row, col)) {
             for (Node node : gridPane.getChildren()) {
-                if (GridPane.getRowIndex(node) == computerRow && GridPane.getColumnIndex(node) == computerCol) {
+                if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
                     Button button = (Button) node;
-                    button.setText(String.valueOf(Model.PLAYER_O)); // Datorns karaktär
+                    button.setText(String.valueOf(model.getCurrentPlayer()));
                     break;
                 }
             }
-
             if (gameCompleted()) return;
             model.switchPlayer();
         }
     }
+
+    public static void sendMoveToOpponent(int row, int col) {
+        if (isServer) {
+            server.sendMove(row, col); // Om denna instans är server, skicka draget via servern
+        } else {
+            client.sendMove(row, col); // Annars skicka draget via klienten
+        }
+    }
+
+
+
+//    private void computerMove() {
+//        if (isGameOver) return;
+//
+//        int[] computerMove = model.getComputerMove();
+//        if (computerMove != null) {
+//            int computerRow = computerMove[0];
+//            int computerCol = computerMove[1];
+//
+//            model.makeMove(computerRow, computerCol);
+//            for (Node node : gridPane.getChildren()) {
+//                if (GridPane.getRowIndex(node) == computerRow && GridPane.getColumnIndex(node) == computerCol) {
+//                    Button button = (Button) node;
+//                    button.setText(String.valueOf(Model.PLAYER_O)); // Datorns karaktär
+//                    break;
+//                }
+//            }
+//
+//            if (gameCompleted()) return;
+//            model.switchPlayer();
+//        }
+//    }
 
     private boolean gameCompleted() {
         if (model.isGameWon(model.getCurrentPlayer())) {
@@ -107,7 +178,7 @@ public class HelloController {
         scoreText.setStyle("-fx-fill: #7FFF00;");
     }
 
-    private void updateScore() {
+    private static void updateScore() {
         if (model.getCurrentPlayer() == Model.PLAYER_X) {
             scoreX++;
         } else {
@@ -124,4 +195,5 @@ public class HelloController {
         isGameOver = false;
         initialize();
     }
+
 }

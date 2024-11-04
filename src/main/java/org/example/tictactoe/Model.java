@@ -1,9 +1,5 @@
 package org.example.tictactoe;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class Model {
     private char[][] board;
     private char currentPlayer;
@@ -41,7 +37,18 @@ public class Model {
         }
 
         board[row][col] = currentPlayer;
+        switchPlayer();
         return true;
+    }
+
+    public boolean receiveOpponentMove(int row, int col) {
+        if (isWithinBounds(row, col) && !isPlaceTaken(row, col)) {
+            board[row][col] = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X; // Alternativ spelare
+            // Byt spelare efter att motståndarens drag är mottaget
+            switchPlayer();
+            return true;
+        }
+        return false;
     }
 
     public boolean isWithinBounds(int row, int col) {
@@ -72,21 +79,19 @@ public class Model {
         currentPlayer = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X;
     }
 
-    public int[] getComputerMove() {
-        List<int[]> availableMoves = new ArrayList<>();
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (board[row][col] == '\0') {
-                    availableMoves.add(new int[]{row, col});
-                }
-            }
-        }
-        if (availableMoves.isEmpty()) {
-            return null;
-        }
-        Random random = new Random();
-        return availableMoves.get(random.nextInt(availableMoves.size()));
-    }
-
-
+//    public int[] getComputerMove() {
+//        List<int[]> availableMoves = new ArrayList<>();
+//        for (int row = 0; row < 3; row++) {
+//            for (int col = 0; col < 3; col++) {
+//                if (board[row][col] == '\0') {
+//                    availableMoves.add(new int[]{row, col});
+//                }
+//            }
+//        }
+//        if (availableMoves.isEmpty()) {
+//            return null;
+//        }
+//        Random random = new Random();
+//        return availableMoves.get(random.nextInt(availableMoves.size()));
+//    }
 }
