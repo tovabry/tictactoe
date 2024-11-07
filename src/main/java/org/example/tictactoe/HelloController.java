@@ -12,7 +12,6 @@ import org.example.tictactoe.socketo.Cliento;
 import org.example.tictactoe.socketo.Servero;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class HelloController {
     public GridPane gridPane;
@@ -23,6 +22,7 @@ public class HelloController {
     private static Servero server;
     private static Cliento client;
     private static boolean isServer;
+    private char lastPlayer;
 
     @FXML
     private TextFlow textFlow;
@@ -38,8 +38,13 @@ public class HelloController {
     }
 
     @FXML
+    private void resetButton() {
+        resetBoard();
+    }
+
+    @FXML
     public void initialize() {
-        displayMessage("Make your move...");
+        displayMessage("Server starts");
         showScore();
     }
 
@@ -50,14 +55,31 @@ public class HelloController {
             try {
                 server.startServer(port);
                 while (!isGameOver) {
-                    int[] move = server.receiveMove();
-                    Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                    String message = server.receiveMessage();
+                    if ("WIN_SIGNAL".equals(message)) {
+                        Platform.runLater(() -> {
+                            updateScore();   // Uppdatera poängen lokalt
+                            showScore();
+                            showWinText();// Visa den uppdaterade poängen
+                        });
+                        break;
+                    }
+                    int[] move = server.parseMove(message); // Hantera draget om det inte är en vinstsignal
+                    Platform.runLater(() -> {
+                        try {
+                            makeOpponentMove(move[0], move[1]);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     model.switchPlayer();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
+
+
     }
 
     public void startClient(String ip, int port) {
@@ -67,8 +89,23 @@ public class HelloController {
             try {
                 client.startClient(ip, port);
                 while (!isGameOver) {
-                    int[] move = client.receiveMove();
-                    Platform.runLater(() -> makeOpponentMove(move[0], move[1]));
+                    String message = client.receiveMessage();  // Använd client här istället för server
+                    if ("WIN_SIGNAL".equals(message)) {
+                        Platform.runLater(() -> {
+                            updateScore();   // Uppdatera poängen lokalt
+                            showScore();
+                            showWinText();// Visa den uppdaterade poängen
+                        });
+                        break;
+                    }
+                    int[] move = client.parseMove(message); // Använd client här för att tolka draget
+                    Platform.runLater(() -> {
+                        try {
+                            makeOpponentMove(move[0], move[1]);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     model.switchPlayer();
                 }
             } catch (IOException e) {
@@ -77,12 +114,13 @@ public class HelloController {
         }).start();
     }
 
-    public void playerMove(ActionEvent event) {
+
+    public void playerMove(ActionEvent event) throws IOException {
         if (isGameOver) return;
 
         // Kontrollera att det är den aktuella spelarens tur
-        if ((isServer && !model.getCurrentPlayer().equals(Model.PLAYER_SERVER)) ||
-                (!isServer && !model.getCurrentPlayer().equals(Model.PLAYER_CLIENT))) {
+        if ((isServer && model.getCurrentPlayer() != Model.PLAYER_SERVER) ||
+                (!isServer && model.getCurrentPlayer() != Model.PLAYER_CLIENT)) {
             displayMessage("It's not your turn!");
             return;
         }
@@ -92,22 +130,32 @@ public class HelloController {
         Integer col = GridPane.getColumnIndex(clickedButton);
 
         if (model.makeMove(row, col)) {
-            clickedButton.setText(String.valueOf(model.getCurrentPlayer().equals(Model.PLAYER_SERVER) ? 'X' : 'O'));
+            // Sätt texten på knappen baserat på vilken spelare som gjorde draget
+            lastPlayer = model.getCurrentPlayer();
+            clickedButton.setText(String.valueOf(model.getCurrentPlayer() == Model.PLAYER_SERVER ? 'X' : 'O'));
+            if (gameCompleted()) return;
+            lastPlayer = model.getCurrentPlayer();
             sendMoveToOpponent(row, col);
+            if (gameCompleted()){
+                getScore();
+                return;
+            }
         }
     }
 
-
-    private void makeOpponentMove(int row, int col) {
-        if (model.receiveOpponentMove(row, col)) {
+    private void makeOpponentMove(int row, int col) throws IOException {
+        if (model.receiveOpponentMove(row, col)) {                                                  //kollar om draget är giltigt
             for (Node node : gridPane.getChildren()) {
-                if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
+                if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {    //går igenom knapparna i gridpane
                     Button button = (Button) node;
-                    button.setText(String.valueOf(model.getCurrentPlayer()));
+                    button.setText(String.valueOf(model.getCurrentPlayer()));                       //sätter currentplayer på platsen
                     break;
                 }
             }
-            if (gameCompleted()) return;
+            if (gameCompleted()){
+                getScore();
+                return;
+            }
             model.switchPlayer();
         }
     }
@@ -120,36 +168,38 @@ public class HelloController {
         }
     }
 
+    public void getScore() {
+        String score = showScore(); // Uppdatera och visa poängen lokalt
+        displayScoreForBoth(score); // Uppdatera poängvisningen för båda spelarna
 
+        // Skicka signal till motståndaren om att spelet är slut
+        if (isServer) {
+            server.sendWinSignal();
+        } else {
+            client.sendWinSignal();
+        }
+    }
 
-//    private void computerMove() {
-//        if (isGameOver) return;
-//
-//        int[] computerMove = model.getComputerMove();
-//        if (computerMove != null) {
-//            int computerRow = computerMove[0];
-//            int computerCol = computerMove[1];
-//
-//            model.makeMove(computerRow, computerCol);
-//            for (Node node : gridPane.getChildren()) {
-//                if (GridPane.getRowIndex(node) == computerRow && GridPane.getColumnIndex(node) == computerCol) {
-//                    Button button = (Button) node;
-//                    button.setText(String.valueOf(Model.PLAYER_O)); // Datorns karaktär
-//                    break;
-//                }
-//            }
-//
-//            if (gameCompleted()) return;
-//            model.switchPlayer();
-//        }
-//    }
+    public void displayScoreForBoth(String score) {
+        Platform.runLater(() -> {
+            scoreTextFlow.getChildren().clear(); // Rensa poängtextfältet innan uppdatering
+            Text scoreText = new Text(score);
+            scoreText.setStyle("-fx-fill: #7FFF00;");
+            scoreTextFlow.getChildren().add(scoreText); // Lägg till den nya poängtexten
+        });
+    }
+
 
     private boolean gameCompleted() {
-        if (model.isGameWon(model.getCurrentPlayer())) {
+        if (model.isGameWon(lastPlayer)) {
             isGameOver = true;
+            updateScore();  // Uppdatera poängen lokalt
             showWinText();
-            updateScore();
             showScore();
+
+            // Skicka vinstsignal till motståndaren för att denne också kan uppdatera poängen
+            sendWinSignalToOpponent();
+
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -159,10 +209,14 @@ public class HelloController {
         return false;
     }
 
-    @FXML
-    private void resetButton() {
-        resetBoard();
+    public void sendWinSignalToOpponent() {
+        if (isServer) {
+            server.sendWinSignal();
+        } else {
+            client.sendWinSignal();
+        }
     }
+
 
     public void displayMessage(String message) {
         textFlow.getChildren().clear();
@@ -172,26 +226,27 @@ public class HelloController {
     }
 
     private void showWinText() {
-        displayMessage("Player " + model.getCurrentPlayer() + " wins!");
+        displayMessage("Player " + lastPlayer + " wins!");
     }
 
     private void showDrawText() {
         displayMessage("It's a draw!");
     }
 
-    private void showScore() {
+    private String showScore() {
         scoreTextFlow.getChildren().clear();
         String scoreString = "Points: Player O: " + scoreO + ", Player X: " + scoreX;
         Text scoreText = new Text(scoreString);
         scoreTextFlow.getChildren().add(scoreText);
         scoreText.setStyle("-fx-fill: #7FFF00;");
+        return scoreString;
     }
 
-    private static void updateScore() {
-        if (Objects.equals(model.getCurrentPlayer(), Model.PLAYER_SERVER)) {
-            scoreX++;
-        } else {
+    private void updateScore() {
+        if (lastPlayer == Model.PLAYER_SERVER) {
             scoreO++;
+        } else {
+            scoreX++;
         }
     }
 

@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Model {
     private char[][] board;
-    private String currentPlayer;
-    public static final String PLAYER_SERVER = "Server";
-    public static final String PLAYER_CLIENT = "Client";
+    private char currentPlayer;
+    public static final char PLAYER_SERVER = ('O');
+    public static final char PLAYER_CLIENT = ('X');
 
     public Model() {
         initializeBoard();
@@ -25,7 +25,7 @@ public class Model {
         return boardCopy;
     }
 
-    public String getCurrentPlayer() {
+    public char getCurrentPlayer() {
         return currentPlayer;
     }
 
@@ -67,33 +67,22 @@ public class Model {
         return true;
     }
 
-    public boolean isGameWon(String player) {
-        char symbol = (player.equals(PLAYER_SERVER)) ? 'X' : 'O'; // Använd X eller O baserat på spelare
+    public boolean isGameWon(char player) {
+        char symbol = (player == PLAYER_SERVER) ? 'X' : 'O'; //om spelare är server tilldelas variabeln symbol X, annars O
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) return true;
-            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol) return true;
+            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol)
+                return true;
+            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol)
+                return true;
         }
+
         if (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) return true;
         return board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol;
     }
 
     public void switchPlayer() {
-        currentPlayer = (currentPlayer.equals(PLAYER_SERVER)) ? PLAYER_CLIENT : PLAYER_SERVER; // Byt spelare
+        currentPlayer = (currentPlayer == PLAYER_SERVER) ? PLAYER_CLIENT : PLAYER_SERVER; //om currentplayer är server switchas turen till klient, annars tvärtom
     }
 
-//    public int[] getComputerMove() {
-//        List<int[]> availableMoves = new ArrayList<>();
-//        for (int row = 0; row < 3; row++) {
-//            for (int col = 0; col < 3; col++) {
-//                if (board[row][col] == '\0') {
-//                    availableMoves.add(new int[]{row, col});
-//                }
-//            }
-//        }
-//        if (availableMoves.isEmpty()) {
-//            return null;
-//        }
-//        Random random = new Random();
-//        return availableMoves.get(random.nextInt(availableMoves.size()));
-//    }
 }
+

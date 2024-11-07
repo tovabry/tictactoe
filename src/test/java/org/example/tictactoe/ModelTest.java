@@ -19,7 +19,7 @@ class ModelTest {
 @Test
 void testValidMove() {
     assertTrue(model.makeMove(0, 0), "Moves on an empty place should be valid");
-    assertEquals(Model.PLAYER_X, model.getBoard()[0][0]  , "Place should contain 'X' after a move");
+    assertEquals(Model.PLAYER_SERVER, model.getBoard()[0][0]  , "Place should contain 'X' after a move");
 }
 
 @Test
