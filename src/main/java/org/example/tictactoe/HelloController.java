@@ -46,6 +46,7 @@ public class HelloController {
     public void initialize() {
         displayMessage("Welcome to Tic Tac Toe");
         showScore();
+        lastPlayer = 'O';
     }
 
     public void startServer(int port) {
@@ -211,10 +212,69 @@ public class HelloController {
     private void resetBoard() {
         isGameOver = false;
         model.initializeBoard();
+        scoreO = 0;
+        scoreX = 0;
+
         gridPane.getChildren().stream()
                 .filter(node -> node instanceof Button)
                 .forEach(node -> ((Button) node).setText(""));
-        textFlow.getChildren().clear();
+
         initialize();
+
+        // Återställ server och klient om det behövs
+        if (gameNetworkService.isServer()) {
+            restartServer();
+        } else if (gameNetworkService.isClient()) {
+            restartClient();
+        }
     }
+
+    private void restartClient() {
+        try {
+            gameNetworkService.stop();  // Stänger den gamla klienten
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Starta om klienten
+        Cliento client = new Cliento();
+        gameNetworkService = new GameNetworkService(client);
+        new Thread(() -> {
+            try {
+                client.startClient("localhost", 8080);
+                while (!isGameOver) {
+                    String message = gameNetworkService.receiveMessage();
+                    handleReceivedMessage(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void restartServer() {
+        try {
+            gameNetworkService.stop();  // Stänger den gamla servern
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Starta om servern
+        Servero server = new Servero();
+        gameNetworkService = new GameNetworkService(server);
+        new Thread(() -> {
+            try {
+                server.startServer(8080);
+                while (!isGameOver) {
+                    String message = gameNetworkService.receiveMessage();
+                    handleReceivedMessage(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+
+
 }

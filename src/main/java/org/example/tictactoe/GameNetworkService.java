@@ -60,8 +60,10 @@ public class GameNetworkService {
     public void stop() throws IOException {
         if (isServer && server != null) {
             server.stopServer();
+            server = null;  // Se till att servern sätts till null
         } else if (!isServer && client != null) {
             client.stopClient();
+            client = null;  // Se till att klienten sätts till null
         } else {
             throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
         }
@@ -93,4 +95,6 @@ public class GameNetworkService {
     public boolean isClient() {
         return isClient;
     }
+
+
 }
