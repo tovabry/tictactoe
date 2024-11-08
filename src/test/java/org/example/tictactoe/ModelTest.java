@@ -54,4 +54,19 @@ void testIfPlayerCanMakeAMoveAfterGameIsWon() {
 
     assertFalse(model.makeMove(2, 2), "Player should not be able to make a move after game is won");
 }
+
+    @Test
+    @DisplayName("Test that computer move follows turn order")
+    void testThatComputerMoveFollowsTurnOrder() {
+        model.makeMove(0, 0);
+        model.switchPlayer();
+        assertEquals(Model.PLAYER_O, model.getCurrentPlayer(), "Current player should switch to O after X's move");
+
+        int[] computerMove = model.getComputerMove();
+        model.makeMove(computerMove[0], computerMove[1]);
+        model.switchPlayer();
+        assertEquals(Model.PLAYER_X, model.getCurrentPlayer(), "Current player should switch back to X after O's move");
+    }
+
+
 }

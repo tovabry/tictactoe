@@ -18,6 +18,10 @@ public class HelloController {
     TextFlow textFlow;
     @FXML
     private TextFlow scoreTextFlow;
+    @FXML
+    private void resetButton() {
+        resetBoard();
+    }
 
     @FXML
     public void initialize() {
@@ -77,11 +81,6 @@ public class HelloController {
             return true;
         }
         return false;
-    }
-
-    @FXML
-    private void resetButton() {
-        resetBoard();
     }
 
     public void displayMessage(String message) {
