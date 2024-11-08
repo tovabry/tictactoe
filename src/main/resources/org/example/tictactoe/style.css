@@ -1,0 +1,24 @@
+.button{
+    -fx-background-color: #000000;
+    -fx-text-fill: #7FFF00;
+    -fx-font-family: "Fira Code Light";
+    -fx-border-width: 1px;
+    -fx-border-color: #7FFF00;
+    -fx-font-size: 30px;
+}
+ .root{
+     -fx-background-color: #000000;
+ }
+
+ #textFlow{
+     -fx-background-color: black;
+     -fx-text-fill: #7FFF00;
+     -fx-font-size: 50px;
+ }
+
+ #scoreTextFlow{
+     -fx-background-color: black;
+     -fx-fill: #7FFF00;
+     -fx-font-size: 20px;
+
+ }
