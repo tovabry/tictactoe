@@ -7,7 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextFlow;
 import javafx.scene.text.Text;
 
-public class HelloController {
+public class Controller {
     public GridPane gridPane;
     private final Model model = new Model();
     public boolean isGameOver = false;
