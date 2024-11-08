@@ -68,5 +68,22 @@ void testIfPlayerCanMakeAMoveAfterGameIsWon() {
         assertEquals(Model.PLAYER_X, model.getCurrentPlayer(), "Current player should switch back to X after O's move");
     }
 
+    @Test
+    @DisplayName("Test for draw when board is full")
+    void testForDrawWhenBoardIsFull() {
+        model.makeMove(0, 0); model.switchPlayer();
+        model.makeMove(0, 1); model.switchPlayer();
+        model.makeMove(0, 2); model.switchPlayer();
+        model.makeMove(1, 1); model.switchPlayer();
+        model.makeMove(1, 0); model.switchPlayer();
+        model.makeMove(2, 0); model.switchPlayer();
+        model.makeMove(1, 2); model.switchPlayer();
+        model.makeMove(2, 2); model.switchPlayer();
+        model.makeMove(2, 1);
+
+        assertTrue(model.isBoardFull(), "Board should be full");
+        assertFalse(model.isGameWon(Model.PLAYER_X) || model.isGameWon(Model.PLAYER_O), "There should be no winner");
+    }
+
 
 }
