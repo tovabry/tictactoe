@@ -37,9 +37,10 @@ public class Cliento {
         return in.readLine();
     }
 
-    public void sendWinSignal() {
-        out.println("WIN_SIGNAL"); // Skicka signal om att spelet är slut och uppdatera poängen
+    public void sendWinSignal(char winner) {
+        out.println("WIN_SIGNAL," + winner);  // Skicka signal om att spelet är slut och vem som vann
     }
+
 
     public String receiveMessage() throws IOException {
         return in.readLine(); // Läser nästa rad från motståndaren

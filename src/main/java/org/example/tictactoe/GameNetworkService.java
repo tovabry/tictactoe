@@ -34,7 +34,6 @@ public class GameNetworkService {
         }
     }
 
-    // Ta emot ett meddelande (drag eller signal)
     public String receiveMessage() throws IOException {
         if (isServer && server != null) {
             return server.receiveMessage();
@@ -45,31 +44,29 @@ public class GameNetworkService {
         }
     }
 
-    // Skicka en vinstsignal till motståndaren
-    public void sendWinSignal() {
+    public void sendWinSignal(char winner) {
         if (isServer && server != null) {
-            server.sendWinSignal();
+            server.sendWinSignal(winner);
         } else if (!isServer && client != null) {
-            client.sendWinSignal();
+            client.sendWinSignal(winner);
         } else {
             throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
         }
     }
 
-    // Stoppa servern eller klienten
+
     public void stop() throws IOException {
         if (isServer && server != null) {
             server.stopServer();
-            server = null;  // Se till att servern sätts till null
+            server = null;
         } else if (!isServer && client != null) {
             client.stopClient();
-            client = null;  // Se till att klienten sätts till null
+            client = null;
         } else {
             throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
         }
     }
 
-    // Hämta serverinstansen (om denna är server)
     public Servero getServer() {
         if (isServer) {
             return server;
@@ -78,7 +75,6 @@ public class GameNetworkService {
         }
     }
 
-    // Hämta klientinstansen (om denna är klient)
     public Cliento getClient() {
         if (!isServer) {
             return client;

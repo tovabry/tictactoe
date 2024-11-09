@@ -29,12 +29,12 @@ public class HelloController {
 
     @FXML
     public void onHostButtonClick() {
-        startServer(8080); // Start server on button click
+        startServer(8080);
     }
 
     @FXML
     public void onJoinButtonClick() {
-        startClient("localhost", 8080); // Start client on button click
+        startClient("localhost", 8080);
     }
 
     @FXML
@@ -84,11 +84,19 @@ public class HelloController {
     }
 
     private void handleReceivedMessage(String message) {
-        if ("WIN_SIGNAL".equals(message)) {
+        if (message == null || message.isEmpty()) {
+            System.err.println("Received an empty or null message.");
+            return;
+        }
+
+        String[] parts = message.split(",");
+
+        if ("WIN_SIGNAL".equals(parts[0])) {
+            char winner = parts[1].charAt(0);
             Platform.runLater(() -> {
-                updateScore();
+                updateScore(winner);
                 showScore();
-                showWinText();
+                showWinText(winner);
             });
             isGameOver = true;
         } else {
@@ -105,6 +113,8 @@ public class HelloController {
             model.switchPlayer();
         }
     }
+
+
 
     public void playerMove(ActionEvent event) throws IOException {
         if (isGameOver) return;
@@ -149,7 +159,7 @@ public class HelloController {
     public void getScore() {
         String score = showScore();
         displayScoreForBoth(score);
-        gameNetworkService.sendWinSignal();
+        gameNetworkService.sendWinSignal(lastPlayer);
     }
 
     public void displayScoreForBoth(String score) {
@@ -164,10 +174,10 @@ public class HelloController {
     private boolean gameCompleted() {
         if (model.isGameWon(lastPlayer)) {
             isGameOver = true;
-            updateScore();
-            showWinText();
+            updateScore(lastPlayer);
+            showWinText(lastPlayer);  // Visa vinnaren
             showScore();
-            gameNetworkService.sendWinSignal();
+            gameNetworkService.sendWinSignal(lastPlayer);  // Skicka vinnaren till motståndaren
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -177,6 +187,7 @@ public class HelloController {
         return false;
     }
 
+
     public void displayMessage(String message) {
         textFlow.getChildren().clear();
         Text text = new Text(message);
@@ -184,9 +195,10 @@ public class HelloController {
         text.setStyle("-fx-fill: #7FFF00;");
     }
 
-    void showWinText() {
-        displayMessage("Player " + lastPlayer + " wins!");
+    void showWinText(char winner) {
+        displayMessage("Player " + winner + " wins!");
     }
+
 
     private void showDrawText() {
         displayMessage("It's a draw!");
@@ -201,19 +213,18 @@ public class HelloController {
         return scoreString;
     }
 
-    void updateScore() {
-        if (lastPlayer == Model.PLAYER_SERVER) {
+    public void updateScore(char winner) {
+        if (winner == 'O') {
             scoreO++;
-        } else {
+        } else if (winner == 'X') {
             scoreX++;
         }
     }
 
+
     private void resetBoard() {
         isGameOver = false;
         model.initializeBoard();
-        scoreO = 0;
-        scoreX = 0;
 
         gridPane.getChildren().stream()
                 .filter(node -> node instanceof Button)

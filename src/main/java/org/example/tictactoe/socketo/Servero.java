@@ -46,9 +46,10 @@ public class Servero{
 
 
 
-    public void sendWinSignal() {
-        out.println("WIN_SIGNAL"); // Skicka signal om att spelet är slut och uppdatera poängen
+    public void sendWinSignal(char winner) {
+        out.println("WIN_SIGNAL," + winner);
     }
+
 
 
     public String receiveScore() throws IOException {
