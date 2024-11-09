@@ -50,6 +50,9 @@ public class Servero{
         out.println("WIN_SIGNAL," + winner);
     }
 
+    public void sendDrawSignal(String drawSignal) {
+        out.println("DRAW_SIGNAL," + drawSignal);
+    }
 
 
     public String receiveScore() throws IOException {

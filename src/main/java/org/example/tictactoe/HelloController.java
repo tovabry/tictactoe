@@ -99,6 +99,9 @@ public class HelloController {
                 showWinText(winner);
             });
             isGameOver = true;
+        } else if ("DRAW_SIGNAL".equals(parts[0])) {
+            Platform.runLater(this::showDrawText);
+            isGameOver = true;
         } else {
             int[] move = gameNetworkService.isServer() ? gameNetworkService.getServer().parseMove(message)
                     : gameNetworkService.getClient().parseMove(message);
@@ -181,6 +184,7 @@ public class HelloController {
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
+            gameNetworkService.sendDrawSignal();
             showDrawText();
             return true;
         }

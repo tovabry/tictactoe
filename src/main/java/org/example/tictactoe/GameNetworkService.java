@@ -5,6 +5,8 @@ import org.example.tictactoe.socketo.Servero;
 
 import java.io.IOException;
 
+import static java.lang.System.out;
+
 public class GameNetworkService {
     private Servero server;
     private Cliento client;
@@ -54,6 +56,15 @@ public class GameNetworkService {
         }
     }
 
+    public void sendDrawSignal() {
+        if (isServer && server != null) {
+            server.sendDrawSignal("DRAW_SIGNAL"); // Skicka DRAW_SIGNAL till klienten
+        } else if (!isServer && client != null) {
+            client.sendDrawSignal("DRAW_SIGNAL"); // Skicka DRAW_SIGNAL till servern
+        } else {
+            System.err.println("Server eller klient är inte korrekt initierad.");
+        }
+    }
 
     public void stop() throws IOException {
         if (isServer && server != null) {

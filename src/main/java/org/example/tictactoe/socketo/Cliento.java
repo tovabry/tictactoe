@@ -41,6 +41,9 @@ public class Cliento {
         out.println("WIN_SIGNAL," + winner);  // Skicka signal om att spelet är slut och vem som vann
     }
 
+    public void sendDrawSignal(String drawSignal) {
+        out.println("DRAW_SIGNAL," + drawSignal);
+    }
 
     public String receiveMessage() throws IOException {
         return in.readLine(); // Läser nästa rad från motståndaren
