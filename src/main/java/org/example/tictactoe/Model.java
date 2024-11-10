@@ -38,14 +38,14 @@ public class Model {
             return false;
         }
 
-        board[row][col] = (currentPlayer == PLAYER_SERVER) ? 'X' : 'O'; // Använd X eller O baserat på spelare
+        board[row][col] = (currentPlayer == PLAYER_SERVER) ? 'X' : 'O';
         switchPlayer();
         return true;
     }
 
     public boolean receiveOpponentMove(int row, int col) {
         if (isWithinBounds(row, col) && !isPlaceTaken(row, col)) {
-            board[row][col] = (Objects.equals(currentPlayer, PLAYER_SERVER)) ? 'O' : 'X'; // Alternativ spelare
+            board[row][col] = (Objects.equals(currentPlayer, PLAYER_SERVER)) ? 'O' : 'X';
             switchPlayer();
             return true;
         }
