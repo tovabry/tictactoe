@@ -5,8 +5,6 @@ import org.example.tictactoe.socketo.Servero;
 
 import java.io.IOException;
 
-import static java.lang.System.out;
-
 public class GameNetworkService {
     private Servero server;
     private Cliento client;
