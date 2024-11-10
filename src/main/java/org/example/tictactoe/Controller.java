@@ -86,7 +86,7 @@ public class Controller {
     public void displayMessage(String message) {
         textFlow.getChildren().clear();
         Text text = new Text(message);
-        text.setId("text");
+        text.setId("bordertext");
         textFlow.getChildren().add(text);
 //        text.setStyle("-fx-fill: #7FFF00;");
     }
