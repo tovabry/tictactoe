@@ -13,19 +13,16 @@ public class GameNetworkService {
     private boolean isServer;
     private boolean isClient;
 
-    // Konstruktor för server
     public GameNetworkService(Servero server) {
         this.server = server;
         this.isServer = true;
     }
 
-    // Konstruktor för klient
     public GameNetworkService(Cliento client) {
         this.client = client;
         this.isServer = false;
     }
 
-    // Skicka ett drag till motståndaren
     public void sendMove(int row, int col) {
         if (isServer && server != null) {
             server.sendMove(row, col);
@@ -94,7 +91,6 @@ public class GameNetworkService {
         }
     }
 
-    // Kolla om detta är en server
     public boolean isServer() {
         return isServer;
     }

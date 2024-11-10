@@ -117,9 +117,7 @@ public class HelloController {
         }
     }
 
-
-
-    public void playerMove(ActionEvent event) throws IOException {
+    public void playerMove(ActionEvent event) {
         if (isGameOver) return;
 
         if ((gameNetworkService.isServer() && model.getCurrentPlayer() != Model.PLAYER_SERVER) ||
@@ -175,12 +173,12 @@ public class HelloController {
     }
 
     private boolean gameCompleted() {
-        if (model.isGameWon(lastPlayer)) {
+        if (model.isGameWon(model.getCurrentPlayer())) {
             isGameOver = true;
             updateScore(lastPlayer);
-            showWinText(lastPlayer);  // Visa vinnaren
+            showWinText(lastPlayer);
             showScore();
-            gameNetworkService.sendWinSignal(lastPlayer);  // Skicka vinnaren till motståndaren
+            gameNetworkService.sendWinSignal(lastPlayer);
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -190,7 +188,6 @@ public class HelloController {
         }
         return false;
     }
-
 
     public void displayMessage(String message) {
         textFlow.getChildren().clear();
@@ -202,7 +199,6 @@ public class HelloController {
     void showWinText(char winner) {
         displayMessage("Player " + winner + " wins!");
     }
-
 
     private void showDrawText() {
         displayMessage("It's a draw!");
@@ -225,7 +221,6 @@ public class HelloController {
         }
     }
 
-
     private void resetBoard() {
         isGameOver = false;
         model.initializeBoard();
@@ -236,7 +231,6 @@ public class HelloController {
 
         initialize();
 
-        // Återställ server och klient om det behövs
         if (gameNetworkService.isServer()) {
             restartServer();
         } else if (gameNetworkService.isClient()) {
@@ -246,12 +240,11 @@ public class HelloController {
 
     private void restartClient() {
         try {
-            gameNetworkService.stop();  // Stänger den gamla klienten
+            gameNetworkService.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Starta om klienten
         Cliento client = new Cliento();
         gameNetworkService = new GameNetworkService(client);
         new Thread(() -> {
@@ -274,7 +267,6 @@ public class HelloController {
             e.printStackTrace();
         }
 
-        // Starta om servern
         Servero server = new Servero();
         gameNetworkService = new GameNetworkService(server);
         new Thread(() -> {
@@ -289,7 +281,4 @@ public class HelloController {
             }
         }).start();
     }
-
-
-
 }

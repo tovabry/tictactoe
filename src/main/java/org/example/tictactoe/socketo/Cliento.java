@@ -33,10 +33,6 @@ public class Cliento {
             return new int[] {Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
         }
 
-    public String receiveScore() throws IOException {
-        return in.readLine();
-    }
-
     public void sendWinSignal(char winner) {
         out.println("WIN_SIGNAL," + winner);  // Skicka signal om att spelet är slut och vem som vann
     }
@@ -53,12 +49,6 @@ public class Cliento {
         String[] parts = message.split(",");
         return new int[] {Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
     }
-
-
-
-    public void SendScore(String score) {
-            out.println(score);
-        }
 
         public void stopClient() throws IOException {
             in.close();

@@ -19,7 +19,7 @@ class ModelTest {
 @Test
 void testValidMove() {
     assertTrue(model.makeMove(0, 0), "Moves on an empty place should be valid");
-    assertEquals(Model.PLAYER_SERVER, model.getBoard()[0][0]  , "Place should contain 'X' after a move");
+    assertEquals(Model.PLAYER_SERVER, model.getBoard()[0][0], "Place should contain 'O' after a move");
 }
 
 @Test
@@ -39,9 +39,11 @@ void testInvalidMoveOnOccupiedPlace(){
 @Test
 @DisplayName("Test if player wins after three in a row")
 void testIfPlayerWinsAfterThreeInARow() {
-    char player = 'X';
+    char player = 'O';
     model.makeMove(0, 0);
+    model.switchPlayer();
     model.makeMove(0, 1);
+    model.switchPlayer();
     model.makeMove(0, 2);
     assertTrue(model.isGameWon(player));
 }
@@ -50,8 +52,11 @@ void testIfPlayerWinsAfterThreeInARow() {
 @DisplayName("Test if player can make a move after game is won")
 void testIfPlayerCanMakeAMoveAfterGameIsWon() {
     model.makeMove(0, 0);
+    model.switchPlayer();
     model.makeMove(0, 1);
+    model.switchPlayer();
     model.makeMove(0, 2);
+    model.switchPlayer();
 
     assertFalse(model.makeMove(2, 2), "Player should not be able to make a move after game is won");
 }

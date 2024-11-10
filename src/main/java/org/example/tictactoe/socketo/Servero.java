@@ -26,25 +26,14 @@ public class Servero{
         out.println(row + "," + col);
     }
 
-    public int[] receiveMove() throws IOException {
-        String move = in.readLine();
-        String[] parts = move.split(",");
-        return new int[] {Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
-    }
-
-    public void sendScore(String score) {
-        out.println(score);
-    }
     public String receiveMessage() throws IOException {
-        return in.readLine(); // Läser nästa rad från motståndaren
+        return in.readLine();
     }
 
     public int[] parseMove(String message) {
         String[] parts = message.split(",");
         return new int[] {Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
     }
-
-
 
     public void sendWinSignal(char winner) {
         out.println("WIN_SIGNAL," + winner);
@@ -53,12 +42,6 @@ public class Servero{
     public void sendDrawSignal(String drawSignal) {
         out.println("DRAW_SIGNAL," + drawSignal);
     }
-
-
-    public String receiveScore() throws IOException {
-        return in.readLine();
-    }
-
 
     public void stopServer() throws IOException {
         in.close();
