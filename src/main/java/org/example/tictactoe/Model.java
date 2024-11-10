@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Model {
     private char[][] board;
     private char currentPlayer;
-    public static final char PLAYER_SERVER = ('O');
-    public static final char PLAYER_CLIENT = ('X');
+    public static final char PLAYER_SERVER = ('X');
+    public static final char PLAYER_CLIENT = ('O');
 
     public Model() {
         initializeBoard();

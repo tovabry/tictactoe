@@ -5,41 +5,36 @@ import org.example.tictactoe.socketo.Servero;
 
 import java.io.IOException;
 
-import static java.lang.System.out;
-
 public class GameNetworkService {
     private Servero server;
     private Cliento client;
     private boolean isServer;
     private boolean isClient;
+    HelloController controller = new HelloController();
 
-    // Konstruktor för server
     public GameNetworkService(Servero server) {
         this.server = server;
         this.isServer = true;
     }
 
-    // Konstruktor för klient
     public GameNetworkService(Cliento client) {
         this.client = client;
-        this.isServer = false;
+        this.isClient = true;
     }
 
-    // Skicka ett drag till motståndaren
     public void sendMove(int row, int col) {
         if (isServer && server != null) {
-            server.sendMove(row, col);
-        } else if (!isServer && client != null) {
-            client.sendMove(row, col);
-        } else {
-            throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
+            server.sendMove(row, col, Model.PLAYER_SERVER);
+        } else if (isClient && client != null) {
+            client.sendMove(row, col, Model.PLAYER_CLIENT);
         }
     }
+
 
     public String receiveMessage() throws IOException {
         if (isServer && server != null) {
             return server.receiveMessage();
-        } else if (!isServer && client != null) {
+        } else if (isClient && client != null) {
             return client.receiveMessage();
         } else {
             throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
@@ -49,7 +44,7 @@ public class GameNetworkService {
     public void sendWinSignal(char winner) {
         if (isServer && server != null) {
             server.sendWinSignal(winner);
-        } else if (!isServer && client != null) {
+        } else if (isClient && client != null) {
             client.sendWinSignal(winner);
         } else {
             throw new IllegalStateException("Server eller klient är inte korrekt initierad.");
@@ -58,9 +53,9 @@ public class GameNetworkService {
 
     public void sendDrawSignal() {
         if (isServer && server != null) {
-            server.sendDrawSignal("DRAW_SIGNAL"); // Skicka DRAW_SIGNAL till klienten
-        } else if (!isServer && client != null) {
-            client.sendDrawSignal("DRAW_SIGNAL"); // Skicka DRAW_SIGNAL till servern
+            server.sendDrawSignal("DRAW_SIGNAL");
+        } else if (isClient && client != null) {
+            client.sendDrawSignal("DRAW_SIGNAL");
         } else {
             System.err.println("Server eller klient är inte korrekt initierad.");
         }
@@ -70,7 +65,7 @@ public class GameNetworkService {
         if (isServer && server != null) {
             server.stopServer();
             server = null;
-        } else if (!isServer && client != null) {
+        } else if (isClient && client != null) {
             client.stopClient();
             client = null;
         } else {
@@ -87,14 +82,13 @@ public class GameNetworkService {
     }
 
     public Cliento getClient() {
-        if (!isServer) {
+        if (isClient) {
             return client;
         } else {
             throw new IllegalStateException("Detta är inte en klient.");
         }
     }
 
-    // Kolla om detta är en server
     public boolean isServer() {
         return isServer;
     }
