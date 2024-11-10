@@ -169,8 +169,8 @@ public class HelloController {
         Platform.runLater(() -> {
             scoreTextFlow.getChildren().clear();
             Text scoreText = new Text(score);
-            scoreText.setStyle("-fx-fill: #7FFF00;");
             scoreTextFlow.getChildren().add(scoreText);
+            scoreText.setId("scoretext");
         });
     }
 
@@ -196,7 +196,7 @@ public class HelloController {
         textFlow.getChildren().clear();
         Text text = new Text(message);
         textFlow.getChildren().add(text);
-        text.setStyle("-fx-fill: #7FFF00;");
+        text.setId("bordertext");
     }
 
     void showWinText(char winner) {
@@ -213,7 +213,7 @@ public class HelloController {
         String scoreString = "Points: Player O: " + scoreO + ", Player X: " + scoreX;
         Text scoreText = new Text(scoreString);
         scoreTextFlow.getChildren().add(scoreText);
-        scoreText.setStyle("-fx-fill: #7FFF00;");
+        scoreText.setId("scoretext");
         return scoreString;
     }
 
