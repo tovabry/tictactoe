@@ -32,6 +32,9 @@ void testInvalidMoveOutOfBounds() {
 @DisplayName("Test invalid move on occupied place")
 void testInvalidMoveOnOccupiedPlace(){
     model.makeMove(2, 1);
+    model.switchPlayer();
+    model.makeMove(2, 1);
+    assertEquals(Model.PLAYER_X, model.getBoard()[2][1]);
     assertTrue(model.isPlaceTaken(2,1), "Place should be occupied after already taken");
 }
 

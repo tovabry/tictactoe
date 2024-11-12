@@ -10,13 +10,13 @@
      -fx-background-color: #000000;
  }
 
- #textFlow{
+ #bordertext{
      -fx-background-color: black;
-     -fx-text-fill: #7FFF00;
+     -fx-fill: #7FFF00;
      -fx-font-size: 50px;
  }
 
- #scoreTextFlow{
+ #scoretextflow{
      -fx-background-color: black;
      -fx-fill: #7FFF00;
      -fx-font-size: 20px;

@@ -86,8 +86,9 @@ public class Controller {
     public void displayMessage(String message) {
         textFlow.getChildren().clear();
         Text text = new Text(message);
+        text.setId("bordertext");
         textFlow.getChildren().add(text);
-        text.setStyle("-fx-fill: #7FFF00;");
+//        text.setStyle("-fx-fill: #7FFF00;");
     }
 
     private void showWinText() {
@@ -103,7 +104,8 @@ public class Controller {
         String scoreString = "Points: Player O: " + scoreO + ", Player X: " + scoreX;
         Text scoreText = new Text(scoreString);
         scoreTextFlow.getChildren().add(scoreText);
-        scoreText.setStyle("-fx-fill: #7FFF00;");
+        scoreText.setId("scoretextflow");
+//        scoreText.setStyle("-fx-fill: #7FFF00;");
     }
 
     private void updateScore() {
