@@ -10,7 +10,6 @@ public class GameNetworkService {
     private Cliento client;
     private boolean isServer;
     private boolean isClient;
-    HelloController controller = new HelloController();
 
     public GameNetworkService(Servero server) {
         this.server = server;

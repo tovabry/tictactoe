@@ -27,11 +27,6 @@ public class Cliento {
             out.println(row + "," + col);
         }
 
-        public int[] receiveMove() throws IOException {
-            String move = in.readLine();
-            String[] parts = move.split(",");
-            return new int[] {Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
-        }
 
     public void sendWinSignal(char winner) {
         out.println("WIN_SIGNAL," + winner);

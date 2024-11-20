@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Model {
     private char[][] board;
     private char currentPlayer;
-    public static final char PLAYER_SERVER = ('X');
-    public static final char PLAYER_CLIENT = ('O');
+    public static final char PLAYER_SERVER = ('O');
+    public static final char PLAYER_CLIENT = ('X');
 
     public Model() {
         initializeBoard();
@@ -68,7 +68,7 @@ public class Model {
     }
 
     public boolean isGameWon(char player) {
-        char symbol = (player == PLAYER_SERVER) ? 'X' : 'O'; //om spelare är server tilldelas variabeln symbol X, annars O
+        char symbol = (player == PLAYER_SERVER) ? 'X' : 'O';
         for (int i = 0; i < 3; i++) {
             if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol)
                 return true;
@@ -81,7 +81,7 @@ public class Model {
     }
 
     public void switchPlayer() {
-        currentPlayer = (currentPlayer == PLAYER_SERVER) ? PLAYER_CLIENT : PLAYER_SERVER; //om currentplayer är server switchas turen till klient, annars tvärtom
+        currentPlayer = (currentPlayer == PLAYER_SERVER) ? PLAYER_CLIENT : PLAYER_SERVER;
     }
 
 }

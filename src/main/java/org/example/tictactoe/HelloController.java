@@ -46,7 +46,7 @@ public class HelloController {
     public void initialize() {
         displayMessage("Welcome to Tic Tac Toe");
         showScore();
-        lastPlayer = 'X';
+        lastPlayer = model.getCurrentPlayer();
     }
 
     public void startServer(int port) {
@@ -117,8 +117,6 @@ public class HelloController {
         }
     }
 
-
-
     public void playerMove(ActionEvent event) {
         if (isGameOver) return;
 
@@ -133,7 +131,6 @@ public class HelloController {
         Integer col = GridPane.getColumnIndex(clickedButton);
 
         if (model.makeMove(row, col)) {
-//            lastPlayer = model.getCurrentPlayer();
             clickedButton.setText(String.valueOf(model.getCurrentPlayer() == Model.PLAYER_SERVER ? 'X' : 'O'));
             if (gameCompleted()) return;
             gameNetworkService.sendMove(row, col);
@@ -148,7 +145,7 @@ public class HelloController {
             for (Node node : gridPane.getChildren()) {
                 if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
                     Button button = (Button) node;
-                    button.setText(String.valueOf(model.getCurrentPlayer() == Model.PLAYER_SERVER ? 'X' : 'O'));
+                    button.setText(String.valueOf(model.getCurrentPlayer() == Model.PLAYER_SERVER ? 'O' : 'X'));
                     break;
                 }
             }
@@ -161,26 +158,25 @@ public class HelloController {
 
     public void getScore() {
         String score = showScore();
+        gameNetworkService.sendWinSignal(model.getCurrentPlayer());
         displayScoreForBoth(score);
-        gameNetworkService.sendWinSignal(lastPlayer);
     }
 
+
     public void displayScoreForBoth(String score) {
-        Platform.runLater(() -> {
             scoreTextFlow.getChildren().clear();
             Text scoreText = new Text(score);
             scoreTextFlow.getChildren().add(scoreText);
             scoreText.setId("scoretext");
-        });
     }
 
     private boolean gameCompleted() {
-        if (model.isGameWon(lastPlayer)) {
-            isGameOver = true;
-            updateScore(lastPlayer);
-            showWinText(lastPlayer);
+        if (model.isGameWon(model.getCurrentPlayer())) {
+            updateScore(model.getCurrentPlayer());
+            showWinText(model.getCurrentPlayer());
             showScore();
-            gameNetworkService.sendWinSignal(lastPlayer);
+            gameNetworkService.sendWinSignal(model.getCurrentPlayer());
+            isGameOver = true;
             return true;
         } else if (model.isBoardFull()) {
             isGameOver = true;
@@ -264,7 +260,7 @@ public class HelloController {
 
     private void restartServer() {
         try {
-            gameNetworkService.stop();  // Stänger den gamla servern
+            gameNetworkService.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
